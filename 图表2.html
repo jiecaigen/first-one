@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>直方图</title>
+    <link rel="stylesheet" href="./图表.css">
+</head>
+
+<body>
+    <div id="main"></div>
+    <script src="./Echarts.js"></script>
+    <script>
+        var chart = document.getElementById("main");
+        var myChart = echarts.init(chart);
+        var option;
+
+        // var data = [[10, 16, 3, 'A'], [16, 18, 15, 'B'], [18, 26, 12, 'C'], [26, 32, 22, 'D'], [32, 56, 7, 'E'], [56, 62, 17, 'F']];
+        var CustomScopeData = [
+            // 列1：维度x，  列2：维度y, 其它维度。。。
+            //X,X,Y{}
+            {
+                type: 'a',
+                value: [65, 70, 98, "课堂测验"],
+                color: "red"
+            },
+            {
+                type: 'b',
+                value: [33, 45, 88, "考勤签到"],
+                color: "green"
+            },
+            {
+                type: 'c',
+                value: [60, 75, 77, "分组讨论"],
+                color: "gold"
+            },
+            {
+                name: 'd',
+                value: [47, 58, 60, "d"],
+            }
+
+            // [12, 20, 60, "a"], // 这是第一个 dataItem
+            // [33, 45, 60, "b"], // 这是第二个 dataItem
+            // [60, 75, 60, "c"], // 这是第三个 dataItem
+        ]
+
+        // var colorList = ['#4f81bd', '#c0504d', '#9bbb59', '#604a7b', '#948a54', '#e46c0b'];
+
+        data = CustomScopeData.map(function (item, index) {
+            // console.log(item.name, index);
+            let colorGroup = []
+            if (item.type == "a") {
+                colorGroup = 'rgba(91, 143, 249,1)'
+            }
+            if (item.type == "b") {
+                colorGroup = 'rgba(255, 136, 132,1)'
+            }
+            if (item.type == "c") {
+                colorGroup = 'rgba(238 ,180 ,34, 1)'
+            }
+            if (item.type == "d") {
+                colorGroup = 'rgba(231 ,40 ,34, 1)'
+            }
+
+            return {
+                value: item.value,
+                itemStyle: {
+                    // color: colorList[index]
+                    color: colorGroup
+                    // color: {
+                    //     type: "linear",
+                    //     x: 0,
+                    //     y: 0,
+                    //     x2: 0,
+                    //     y2: 1,
+                    //     colorStops: colorGroup,
+                    //     globalCoord: true
+                    // },
+                }
+            };
+        });
+
+        function renderItem(params, api) {
+            // console.log(params);
+            // api.value()  默认返回第一列的维度值12，53，71；接收参数0，1，2..。返回某列的维度值
+            var yValue = api.value(2);
+            /*
+                @param {Array.<number>} data 数据值。
+                @return {Array.<number>} 画布上的点的坐标，至少包含：[x, y]
+            
+            */
+            var start = api.coord([api.value(0), yValue]);
+            var size = api.size([api.value(1) - api.value(0), yValue]);
+            var style = api.style();
+            // console.log(api.value(3))
+            return {
+                type: 'rect',
+                shape:
+                    echarts.graphic.clipRectByRect({
+                        // 矩形的位置和大小。
+                        x: start[0],
+                        y: start[1],
+                        width: size[0],
+                        height: size[1]
+                    },
+                        {
+                            // 当前坐标系的包围盒。
+                            x: params.coordSys.x,
+                            y: params.coordSys.y,
+                            width: params.coordSys.width,
+                            height: params.coordSys.height
+                        }
+                    ),
+                style: style
+            };
+        }
+
+        option = {
+            title: {
+                text: '测试区域分布图',
+                left: 'center'
+            },
+            // tooltip: {
+            //     target: "item",
+            //     show: false,
+            //     formatter: function (params) {
+            //         let color = params.data.itemStyle.color.colorStops[2].color
+            //         // console.log(color);
+            //         return params.data.value[3]
+            //     }
+            // },
+            xAxis: [
+                {
+                    min: 0,
+                    max: 90,
+                    interval: 5,
+                    scale: true,
+                    splitLine: {
+                        show: true
+                    },
+                },
+                // {
+                //     name: "分钟",
+                //     nameTextStyle: {
+                //         color: "#999999",
+                //         fontSize: 12,
+                //         fontWeight: 400,
+                //         padding: [35, 0, 0, -2, 0],
+                //     },
+                //     type: "category",
+                //     axisPointer: {
+                //         type: "line",
+                //         lineStyle: {
+                //             type: "solid", // 实线solid\虚线dotted
+                //             // width: 40, // 设置背景线的宽度
+                //             color: 'rgba(217,217,217,0.65)'
+                //         },
+                //     },
+                //     axisLine: {
+                //         show: true,
+                //         lineStyle: {
+                //             width: 1,
+                //             color: "rgba(238,238,238,0.95)",
+                //         },
+                //     },
+                //     axisLabel: {
+                //         textStyle: {
+                //             color: "rgba(0,0,0,0.45)", //坐标值的具体的颜色
+                //             fontSize: 14,
+                //             fontWeight: 400,
+                //             lineHeight: 20,
+                //         },
+                //     },
+                //     boundaryGap: false, //x轴两边不留空白
+                //     axisTick: {
+                //         show: false,
+                //     },
+                //     data: [
+                //         "0",
+                //         "5",
+                //         "10",
+                //         "15",
+                //         "20",
+                //         "25",
+                //         "30",
+                //         "35",
+                //         "40",
+                //         "45",
+                //         "50",
+                //         "55",
+                //         "60",
+                //         "65",
+                //         "70",
+                //         "75",
+                //         "80",
+                //         "85",
+                //         "90",
+                //         "95",
+                //     ],
+                // }
+            ],
+            yAxis: {
+                min: 0,
+                max: 100,
+                interval: 25,
+            },
+            series: [
+                {
+                    type: 'custom',
+                    renderItem: renderItem,
+                    label: {
+                        show: false,
+                        position: 'center'
+                    },
+                    data: data
+                },
+                // {
+                //     name: "低头率",
+                //     type: "line",
+                //     smooth: true,
+                //     barWidth: 20,
+                //     itemStyle: {
+                //         color: "#F99A01",
+                //     },
+                //     data: [
+                //         39, 41, 0, 11, 28, 0, 32, 25, 46, 28, 49, 10, 39, 41, 0, 11, 28,
+                //         0, 12, 25,
+                //     ],
+                // },
+                // {
+                //     name: "抬头率",
+                //     type: "line",
+                //     smooth: true, //是否用曲线
+                //     barWidth: 20,
+                //     itemStyle: {
+                //         color: "#5B8FF9",
+                //     },
+                //     data: [
+                //         52, 35, 46, 21, 19, 0, 52, 35, 46, 21, 19, 0, 52, 35, 46, 21, 19,
+                //         0, 52, 35,
+                //     ],
+                // },
+            ]
+        };
+
+
+        option && myChart.setOption(option);
+    </script>
+</body>
+
+</html>

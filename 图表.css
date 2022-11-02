@@ -1,0 +1,17 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#main {
+    margin: 50px auto;
+    height: 500px;
+    width: 1000px;
+    background-color: rgb(240, 234, 234);
+}
+
+/* @media screen and(max-width:1600px) {
+    #main {
+        width: 250px !important;
+    }
+} */

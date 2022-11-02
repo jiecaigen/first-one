@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>区域图</title>
+    <link rel="stylesheet" href="./图表.css">
+</head>
+
+<body>
+    <div id="main"></div>
+    <script src="./Echarts.js"></script>
+    <script>
+        var chart = document.getElementById("main");
+        var myChart = echarts.init(chart);
+        var option;
+        var data = [
+            // {
+            //     index:0,
+            //     xStart:13,
+            //     xEnd:59,
+            //     name:'课堂测验',
+            //     yield:100
+            // },
+            //索引/起始值/终点值/项目名称
+            [0, 13, 62, '课堂测验', 100],// 这是第一个 dataItem
+            [1, 60, 70, '考勤签到', 100],
+            [2, 70, 79, '课堂答题', 100],
+            [3, 80, 89, '分组讨论', 100],
+        ];
+        var colorList = ['rgba(255, 136, 132)', 'rgba(91, 143, 249)', 'rgba(255, 244, 204)', 'rgba(242, 237, 253)'];
+
+        option = {
+            title: {
+                text: '成绩demo',
+                left: 'center'
+            },
+            xAxis: [{//x轴最小值0，最大值自定义
+                min: 0,
+                max: 90,
+                interval: 2,
+                splitLine: {
+                    show: false
+                }
+            }],
+            yAxis: {
+                min: 0,
+                max: 100,
+            },
+            // tooltip: {},
+            series: [{
+                type: 'custom',//图表类型时自定义
+                data: data,//所提供的数据源⭐
+                legendHoverLink: true,
+                renderItem: function (params, api) {
+                    console.log(this);
+                    console.log(api, params);
+                    var yval = api.value(4);//相当于y轴的高度,取得是空间中第一个维度的数据
+                    var start = api.coord([api.value(1), yval]);//
+                    var size = api.size([api.value(2) - api.value(1), yval]);
+                    var style = api.style({});
+                    var name = api.value(3);
+                    console.log(name);
+                    var colorGroup = ""
+                    if (name == "课堂测验") {
+                        colorGroup = "#4f81bd"
+                        console.log(colorGroup);
+                    }
+                    else if (name == "考勤签到") {
+                        colorGroup = "#c0504d"
+                        console.log(colorGroup);
+                    }
+                    else if (name == "课堂答题") {
+                        colorGroup = "#9bbb59"
+                        console.log(colorGroup);
+                    }
+                    else {
+                        colorGroup = "#604a7b"
+                        console.log(colorGroup);
+                    }
+                    // var color = colorList[api.value(0)]
+                    // 这里返回为这个 dataItem 构建的图形元素定义。
+                    return {
+                        type: 'rect', // 表示这个图形元素是矩形。还可以是 'circle', 'sector', 'polygon' 等等。
+                        shape: { // shape 属性描述了这个矩形的像素位置和大小。
+                            // 其中特殊得用到了 echarts.graphic.clipRectByRect，意思是，
+                            // 如果矩形超出了当前坐标系的包围盒，则剪裁这个矩形。
+                            x: start[0],
+                            y: start[1],
+                            width: size[0],
+                            height: size[1]
+                        },
+                        style: {
+                            fill: colorGroup
+                        }
+                    };
+                },
+                encode: {
+                    // 表示『维度2』和『维度3』要显示到 tooltip 中。
+                    x: [1, 2],
+                    // y: [4],
+                    tooltip: [4],
+                    // itemName: 3
+                }
+            },
+        {
+            type:"line",
+
+
+        }]
+        };
+        option && myChart.setOption(option);
+    </script>
+</body>
+
+</html>
